@@ -33,6 +33,8 @@ v0.0 - Initial commit
 
 v0.3 - drawSprite(), eraseSprite() and moveSprite() written
 
-Next: areColliding() function, palette support, more sprite manipulation functions
+v0.4 - areColliding() and createSprite() written
+
+Next: palette support, more sprite manipulation functions
 
 **This is still a work in progress.**

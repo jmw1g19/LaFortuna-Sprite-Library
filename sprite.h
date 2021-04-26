@@ -18,6 +18,8 @@ void drawSprite(sprite s, uint16_t colours[]);
 
 void eraseSprite(sprite s);
 
-sprite moveSprite(sprite s, uint16_t colours[], uint16_t x, uint16_t y);
+sprite moveSprite(sprite s, uint16_t colours[], int x, int y);
 
 int areColliding(sprite s1, sprite s2);
+
+sprite createSprite(uint16_t x, uint16_t y, int pixelCount, int pixelsPerRow, uint16_t pixelSize, uint16_t colours[]);
