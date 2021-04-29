@@ -5,9 +5,11 @@
 
 #include "sprite.h"
 #include <util/delay.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-/* Draws a sprite 's' to the screen using colours for each pixel as defined in 'colours'. */
-void drawSprite(sprite s, uint16_t colours[]){
+/* Draws a sprite to the screen given the palette and pixel colours. */
+void drawSprite(sprite s, int colours[], uint16_t palette[]){
     uint16_t drawX, drawY;
     drawX = s.x; drawY = s.y;
     int i;
@@ -19,12 +21,12 @@ void drawSprite(sprite s, uint16_t colours[]){
         r.top = drawY; r.bottom = drawY + s.pixelSize;
         r.left = drawX; r.right = drawX + s.pixelSize;
 
-        fill_rectangle(r, colours[i]);
+        fill_rectangle(r, palette[colours[i]]);
         drawX = drawX + s.pixelSize;
     }
 } 
 
-/* Remove a sprite 's' from the screen. */
+/* Remove a sprite from the screen. You should avoid calling this directly. */
 void eraseSprite(sprite s){
     int rows = s.pixelCount / s.pixelsPerRow;
     rectangle r;
@@ -34,8 +36,8 @@ void eraseSprite(sprite s){
     fill_rectangle(r, BLACK);
 }
 
-/* Moves a sprite 's' by position x, y and draws it to screen. The updated sprite is returned. */
-sprite moveSprite(sprite s, uint16_t colours[], int x, int y){
+/* Moves a sprite by the supplied offset and draws it to screen. The updated sprite is returned. */
+sprite moveSprite(sprite s, int colours[], int x, int y, uint16_t palette[]){
     int rows = s.pixelCount / s.pixelsPerRow;
     int erased = 0;
     int absX, absY; absX = x; absY = y;
@@ -75,7 +77,7 @@ sprite moveSprite(sprite s, uint16_t colours[], int x, int y){
 
     s.x = s.x + x;
     s.y = s.y + y;
-    drawSprite(s, colours);
+    drawSprite(s, colours, palette);
     return s;
 }
 
@@ -86,22 +88,22 @@ int areColliding(sprite s1, sprite s2){
 
     int s1rows = s1.pixelCount / s1.pixelsPerRow;
     int s2rows = s2.pixelCount / s2.pixelsPerRow;
-    int s1endingY = s1.y + s1.pixelsPerRow*s1rows;
-    int s2endingY = s2.y + s2.pixelsPerRow*s2rows;
+    int s1endingY = s1.y + s1.pixelSize*s1rows;
+    int s2endingY = s2.y + s2.pixelSize*s2rows;
 
     int collidingX = 0; int collidingY = 0;
 
-    if(s1.x > s2.x && s1.x < s2endingX) { collidingX = 1; }
-    if(s2.x > s1.x && s2.x < s1endingX) { collidingX = 1; }
+    if(s1.x >= s2.x && s1.x <= s2endingX) { collidingX = 1; }
+    if(s2.x >= s1.x && s2.x <= s1endingX) { collidingX = 1; }
 
-    if(s1endingX > s2.x && s1.x < s2.x) { collidingX = 1; }
-    if(s2endingX > s1.x && s2.x < s1.x) { collidingX = 1; }
+    if(s1endingX >= s2.x && s1.x <= s2.x) { collidingX = 1; }
+    if(s2endingX >= s1.x && s2.x <= s1.x) { collidingX = 1; }
 
-    if(s1.y > s2.y && s1.y < s2endingY) { collidingY = 1; }
-    if(s2.y > s1.y && s2.y < s1endingY) { collidingY = 1; }
+    if(s1.y >= s2.y && s1.y <= s2endingY) { collidingY = 1; }
+    if(s2.y >= s1.y && s2.y <= s1endingY) { collidingY = 1; }
 
-    if(s1endingY > s2.y && s1.y < s2.y) { collidingY = 1; }
-    if(s2endingX > s1.y && s2.y < s1.y) { collidingY = 1; }
+    if(s1endingY >= s2.y && s1.y <= s2.y) { collidingY = 1; }
+    if(s2endingX >= s1.y && s2.y <= s1.y) { collidingY = 1; }
 
     if(collidingX == 1 && collidingY == 1){
         return 1;
@@ -111,15 +113,33 @@ int areColliding(sprite s1, sprite s2){
     }
 }
 
-/* Create a new sprite with co-ordinates (x, y), pixel width/height of 'pixelSize', total pixel count 'pixelCount', horizontal pixel count 'pixelsPerRow' and palette 'colours'.
-   Draws the sprite to the screen and returns it. */
-sprite createSprite(uint16_t x, uint16_t y, int pixelCount, int pixelsPerRow, uint16_t pixelSize, uint16_t colours[]){
+/* Create a new sprite with the specified parameters. The sprite is drawn to screen and returned. */
+sprite createSprite(uint16_t x, uint16_t y, int pixelCount, int pixelsPerRow, uint16_t pixelSize, int colours[], uint16_t palette[]){
     sprite s;
     s.x = x;
     s.y = y;
     s.pixelCount = pixelCount;
     s.pixelsPerRow = pixelsPerRow;
     s.pixelSize = pixelSize;
-    drawSprite(s, colours);
+    drawSprite(s, colours, palette);
+    return s;
+}
+
+/* Applies the effect of gravity to a sprite. Returns the new sprite. */
+sprite applyGravityToSprite(sprite s, int colours[], uint16_t palette[]) {
+    return moveSprite(s, colours, 0, s.gravity, palette);
+}
+
+/* Updates the gravity of a sprite. Returns the new sprite. */
+sprite setSpriteGravity(sprite s, float g){
+    if(g > 10) { g = 10;}
+    s.gravity = g;
+    return s;
+}
+
+/* Changes the gravity of a sprite. Returns the new sprite. */
+sprite changeSpriteGravity(sprite s, float g){
+    s.gravity += g;
+    if(s.gravity > 10) { s.gravity = 10;}
     return s;
 }
