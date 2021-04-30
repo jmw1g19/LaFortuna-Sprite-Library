@@ -81,7 +81,8 @@ sprite moveSprite(sprite s, int colours[], int x, int y, uint16_t palette[]){
     return s;
 }
 
-/* Calculates if two sprites are colliding/overlapping. Returns 1 if true, and 0 if false. */
+/* Calculates if two sprites are colliding. Returns 1 if true, and 0 if false.
+   Both sprite types must a 'collider' or 'trigger'. */
 int areColliding(sprite s1, sprite s2){
     int s1endingX = s1.x + s1.pixelsPerRow*s1.pixelSize;
     int s2endingX = s2.x + s2.pixelsPerRow*s2.pixelSize;
@@ -106,7 +107,8 @@ int areColliding(sprite s1, sprite s2){
     if(s2endingX >= s1.y && s2.y <= s1.y) { collidingY = 1; }
 
     if(collidingX == 1 && collidingY == 1){
-        return 1;
+        if(s1.spriteType == fixed || s2.spriteType == fixed) { return 0; }
+        else { return 1; }
     }
     else{
         return 0;
@@ -114,13 +116,14 @@ int areColliding(sprite s1, sprite s2){
 }
 
 /* Create a new sprite with the specified parameters. The sprite is drawn to screen and returned. */
-sprite createSprite(uint16_t x, uint16_t y, int pixelCount, int pixelsPerRow, uint16_t pixelSize, int colours[], uint16_t palette[]){
+sprite createSprite(uint16_t x, uint16_t y, int pixelCount, int pixelsPerRow, uint16_t pixelSize, int colours[], uint16_t palette[], type spriteType){
     sprite s;
     s.x = x;
     s.y = y;
     s.pixelCount = pixelCount;
     s.pixelsPerRow = pixelsPerRow;
     s.pixelSize = pixelSize;
+    s.spriteType = spriteType;
     drawSprite(s, colours, palette);
     return s;
 }
@@ -142,4 +145,16 @@ sprite changeSpriteGravity(sprite s, float g){
     s.gravity += g;
     if(s.gravity > 10) { s.gravity = 10;}
     return s;
+}
+
+/* Checks if a sprite is overlapping wth a trigger, and if so, calls the supplied function.  
+   Returns 1 if true, and 0 if false.*/
+int areTriggering(sprite s1, sprite s2, void(*function)()){
+    if(areColliding(s1, s2) == 1){
+        if (s1.spriteType == trigger || s2.spriteType == trigger) { (*function)(); return 1; }
+        else { return 0; }
+    }
+    else{
+        return 0;
+    }
 }

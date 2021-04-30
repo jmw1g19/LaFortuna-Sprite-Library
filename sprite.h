@@ -7,12 +7,15 @@
 #include <stdint.h>
 #include "./lcd/lcd.h"
 
+typedef enum {fixed, collider, trigger} type;
+
 typedef struct{
     volatile uint16_t x, y;
     int pixelCount;
     int pixelsPerRow;
     uint16_t pixelSize;
     float gravity;
+    type spriteType;
 } sprite;
 
 void drawSprite(sprite s, int colours[], uint16_t palette[]);
@@ -23,10 +26,12 @@ sprite moveSprite(sprite s, int colours[], int x, int y, uint16_t palette[]);
 
 int areColliding(sprite s1, sprite s2);
 
-sprite createSprite(uint16_t x, uint16_t y, int pixelCount, int pixelsPerRow, uint16_t pixelSize, int colours[], uint16_t palette[]);
+sprite createSprite(uint16_t x, uint16_t y, int pixelCount, int pixelsPerRow, uint16_t pixelSize, int colours[], uint16_t palette[], type spriteType);
 
 sprite applyGravityToSprite(sprite s, int colours[], uint16_t palette[]);
 
 sprite setSpriteGravity(sprite s, float g);
 
 sprite changeSpriteGravity(sprite s, float g);
+
+int areTriggering(sprite s1, sprite s2, void(*function)());
