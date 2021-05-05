@@ -158,3 +158,10 @@ int areTriggering(sprite s1, sprite s2, void(*function)()){
         return 0;
     }
 }
+
+/* Re-scales a sprite by a supplied factor, by changing the pixel size. Returns the new sprite. */
+sprite rescaleSprite(sprite s, int delta, int colours[], uint16_t palette){
+    s.pixelSize = s.pixelSize * delta;
+    drawSprite(s, colours, palette);
+    return s;
+}

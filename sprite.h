@@ -18,6 +18,14 @@ typedef struct{
     type spriteType;
 } sprite;
 
+typedef struct{
+    int currentFrame;
+    int frameCount;
+    int * frames[32];
+} animation;
+
+typedef enum {loop, stop_on_end} animationProperty;
+
 void drawSprite(sprite s, int colours[], uint16_t palette[]);
 
 void eraseSprite(sprite s);
@@ -35,3 +43,11 @@ sprite setSpriteGravity(sprite s, float g);
 sprite changeSpriteGravity(sprite s, float g);
 
 int areTriggering(sprite s1, sprite s2, void(*function)());
+
+sprite rescaleSprite(sprite s, int delta, int colours[], uint16_t palette);
+
+animation createAnimation(int frameCount, int * frames[]);
+
+sprite moveAnimatedSprite(sprite s, animation a, int x, int y, uint16_t palette[], animationProperty property);
+
+sprite applyGravityToAnimatedSprite(sprite s, animation a, uint16_t palette[]);

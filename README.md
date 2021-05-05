@@ -1,4 +1,4 @@
-# LaFortuna Sprite Library v0.6
+# LaFortuna Sprite Library v0.65
 A sprite library for writing games for the LaFortuna, a microprocessor board running the AT90USB1286.
 
 ## Uses
@@ -69,6 +69,8 @@ v0.5 - palette support and gravity introduced
 
 v0.6 - Sprite type support and code example written
 
-Next: sprite manipulation functions, sprite_init() and configuration support
+v0.65 - rescaleSprite() and animation structs written
+
+Next: Animations, prite_init() and configuration support
 
 **This is still a work in progress.**
