@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+int backgroundColour = BLACK;
+
 /* Draws a sprite to the screen given the palette and pixel colours. */
 void drawSprite(sprite s, int colours[], uint16_t palette[]){
     uint16_t drawX, drawY;
@@ -33,7 +35,7 @@ void eraseSprite(sprite s){
     r.top = s.y; r.bottom = s.y + (s.pixelSize * rows);
     r.left = s.x; r.right = s.x + (fmin(s.pixelCount, s.pixelsPerRow) * s.pixelSize);
 
-    fill_rectangle(r, BLACK);
+    fill_rectangle(r, backgroundColour);
 }
 
 /* Moves a sprite by the supplied offset and draws it to screen. The updated sprite is returned. */
@@ -61,7 +63,7 @@ sprite moveSprite(sprite s, int colours[], int x, int y, uint16_t palette[]){
             r1.left = s.x; r1.right = s.x + (s.pixelCount * s.pixelsPerRow);
         }
 
-        fill_rectangle(r1, BLACK);
+        fill_rectangle(r1, backgroundColour);
 
         if(x >= 0){
             r2.left = s.x; r2.right = s.x + x;
@@ -72,7 +74,7 @@ sprite moveSprite(sprite s, int colours[], int x, int y, uint16_t palette[]){
            r2.top = s.y; r2.bottom = s.y + (rows * s.pixelSize);
         }
     
-        fill_rectangle(r2, BLACK);        
+        fill_rectangle(r2, backgroundColour);        
     }
 
     s.x = s.x + x;
@@ -164,4 +166,33 @@ sprite rescaleSprite(sprite s, int delta, int colours[], uint16_t palette){
     s.pixelSize = s.pixelSize * delta;
     drawSprite(s, colours, palette);
     return s;
+}
+
+/* Creates an animation object with the supplied list of frames and frame count. */
+animation createAnimation(int frameCount, int * frames[]){
+    animation a;
+    a.frameCount = frameCount;
+    a.currentFrame = 0;
+    for(int i = 0; i < 32; i++){
+        a.frames[i] = frames[i];
+    }
+    return a;
+}
+
+/* Advances an animation to the next frame, accounting for the animationProperty supplied. 
+   Returns the updated animation object. */
+animation nextFrame(animation a, animationProperty property){
+    a.currentFrame = a.currentFrame + 1;
+    if((a.currentFrame > a.frameCount - 1) && property == loop){
+        a.currentFrame = 0;
+    }
+    else if((a.currentFrame > a.frameCount - 1) && property == stop_on_end){
+        a.currentFrame = a.currentFrame - 1;
+    }
+    return a;
+}
+
+/* Gets the current frame from an animation. Returns the pointer to the array of pixel colours. */
+int * getFrame(animation a){
+    return a.frames[a.currentFrame];
 }

@@ -48,6 +48,6 @@ sprite rescaleSprite(sprite s, int delta, int colours[], uint16_t palette);
 
 animation createAnimation(int frameCount, int * frames[]);
 
-sprite moveAnimatedSprite(sprite s, animation a, int x, int y, uint16_t palette[], animationProperty property);
+animation nextFrame(animation a, animationProperty property);
 
-sprite applyGravityToAnimatedSprite(sprite s, animation a, uint16_t palette[]);
+int * getFrame(animation a);
